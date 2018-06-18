@@ -1,0 +1,15 @@
+# Your username on hie-storage
+storage_username: 'gerry.devine'
+# The full path to your SSH private key
+key_file: '\\ad.uws.edu.au/dfshare/HomesHWK$/30036712/My Documents/keys/id_rsa'
+# Regex pattern for pre-subtraction subfolders
+regex_matcher: '^crop_EUCter_\S*$'
+# Local folder containing Cleaned sub-directories
+#cleanedDir: 'Z:\WORKING_DATA\TERN\PROJECTS\TERN_Supersite_PlantHydraulics\Peters_J\Clean Data\LI_clean'
+cleanedDir: 'Z:\COMMON\Admin\Cleaned_Items'
+# Local Backups folder for Cleaned sub-directories
+backupDir: 'Z:\COMMON\Admin\Backups'
+# Path of upload folder on hie-storage
+# hiestorageDir = '/data/mounts/hiestorage/WorkingData/TERN/PROJECTS/Limits_Resilience_Drought/Share/Leaf_images_clean'
+hiestorageDir: '/data/hiestorage/Personal/Devine_G/Cleaned_Images'
+
