@@ -11,5 +11,5 @@ cleanedDir: 'Z:\COMMON\Admin\Cleaned_Items'
 backupDir: 'Z:\COMMON\Admin\Backups'
 # Path of upload folder on hie-storage
 # hiestorageDir = '/data/mounts/hiestorage/WorkingData/TERN/PROJECTS/Limits_Resilience_Drought/Share/Leaf_images_clean'
-hiestorageDir: '/data/hiestorage/Personal/Devine_G/Cleaned_Images'
+hiestorageDir: '/data/hiestorage/Personal/Devine_G/Cleaned_Images/'
 

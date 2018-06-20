@@ -10,8 +10,6 @@ import paramiko
 import re
 import yaml
 import getpass
-# import hashlib
-import tqdm
 from datetime import datetime
 from pathlib import Path
 
@@ -22,10 +20,20 @@ ErrorsFound = False
 # -- Open log file for writing and append date/time stamp into file for a new entry
 logfile = 'log.txt'
 log = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), logfile), 'a')
-log.write('\n----------------------------------------------- \n')
-log.write('------------  '+datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'  ------------ \n')
-log.write('----------------------------------------------- \n')
+log.write('\n------------  Begin: '+datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'  ------------ \n')
 
+
+def rexists(sftp, path):
+    """ os.path.exists for paramiko's SCP object
+    """
+    try:
+        sftp.stat(path)
+    except IOError as e:
+        if e.errno == 2:
+            return False
+        raise
+    else:
+        return True
 
 # -- Read in details from settings file
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "settings.yaml"), 'r') as yamlfile:
@@ -41,6 +49,8 @@ with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "settings.yam
 # -- Configure HIE-storage SFTP setup
 host = "hie-storage.intersect.org.au"
 port = 22
+
+print('--- Beginning transfer....')
 try:
     key_passphrase = getpass.getpass(prompt="Please enter your key passphrase: ")
     k = paramiko.RSAKey.from_private_key_file(key_file, password=key_passphrase)
@@ -70,16 +80,16 @@ for item in os.listdir(cleanedDir):
             print("I/O error({0}): {1}".format(errno, strerror))
 
         # Check if directory already exists on hie-storage and abort if so
-        if sftp.stat(item_full_path_remote):
+        if rexists(sftp, item_full_path_remote):
             log.write('This directory already exists on hie-storage - Aborting \n')
             ErrorsFound = True
             break
         # Otherwise proceed to copy/sftp the folder to hie-storage
         sftp.mkdir(item_full_path_remote)
-        log.write('Transferring %s to HIE-Storage \n', item)
+        log.write('Transferring %s to HIE-Storage \n' % item)
         for dirpath, dirnames, filenames in os.walk(item_full_path_local):
             file_counter = 0
-            for filename in tqdm(filenames):
+            for filename in filenames:
                 if filename.endswith('.tif'):
                     try:
                         sftp.put(os.path.join(item_full_path_local, filename), os.path.join(item_full_path_remote+'/', filename))
@@ -104,7 +114,8 @@ for item in os.listdir(cleanedDir):
             src_file = os.path.join(item_full_path_local, file_)
             dst_file = os.path.join(backupDir, file_)
             shutil.move(src_file, dst_dir)
-    log.write('%s directory moved to Backups folder\n', item)
+    shutil.rmtree(item_full_path_local)
+    log.write('%s directory moved to Backups folder\n' % item)
 
 # -- Wrap up first stage
 if ErrorsFound:
@@ -112,7 +123,8 @@ if ErrorsFound:
 else:
     log.write('*** Completed successfully\n')
 
+input("Press Enter to finish...")
 
-log.write('------------------    END    ------------------- \n')
+
+log.write('------------  End: '+datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'  ------------ \n')
 log.write('\n')
-
